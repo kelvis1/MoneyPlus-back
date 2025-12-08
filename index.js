@@ -1,21 +1,15 @@
 import express from "express";
-import cors from "cors";
-import authRoutes from "./backend/routes/auth.js";
 
 const app = express();
+const port = 3000; // You can change this to any port you prefer
 
-app.use(cors());
-app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("Hello, World! This is your Express API demo.");
+});
 
+app.listen(port, () => {
+  console.log("Server is running");
+});
 
-
-app.use("/auth", authRoutes);
-
-
-// const port = 3000;
-
-// app.listen(port, () => {
-//   console.log("Server is running");
-// });
-
+//////////// Export app defaultly ///////////////////////////
 export default app;
