@@ -8,13 +8,13 @@ import app from "../../index.js";
 // const router = express.Router();
 const SECRET = "seu_token";
 
-app.get("/status", (req, res) => {
-    res.json({
-        status: "online",
-        message: "API funcionando corretamente!",
-        timestamp: new Date().toISOString(),
-    });
-});
+// app.get("/status", (req, res) => {
+//     res.json({
+//         status: "online",
+//         message: "API funcionando corretamente!",
+//         timestamp: new Date().toISOString(),
+//     });
+// });
 
 // //Registro
 // router.post("/registro", async (req, res) => {

@@ -10,6 +10,14 @@ app.get("/", (req, res) => {
   res.send("Hello, World! This is your Express API demo.");
 });
 
+app.get("/status", (req, res) => {
+    res.json({
+        status: "online",
+        message: "API funcionando corretamente!",
+        timestamp: new Date().toISOString(),
+    });
+});
+
 
 // app.use("/auth", authRoutes);
 
