@@ -12,6 +12,10 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 
 
-app.listen(8000, () => console.log("Backend rodando na porta 8000"));
+const port = 3000;
+
+app.listen(port, () => {
+  console.log("Server is running");
+});
 
 export default app;
