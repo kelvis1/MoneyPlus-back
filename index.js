@@ -39,14 +39,14 @@ app.get("/", (req, res) => {
 });
 
 // 🔍 Rota para listar todos os usuários (retira a senha)
-app.get("/users", (req, res, next) => {
-  try {
-    const users = db.prepare("SELECT id, name, email FROM users").all();
-    return res.json(users);
-  } catch (err) {
-    next(err);
-  }
-});
+// //app.get("/users", (req, res, next) => {
+//   try {
+//     const users = db.prepare("SELECT id, name, email FROM users").all();
+//     return res.json(users);
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
 // 📌 Registro
 app.post("/registro", (req, res, next) => {
