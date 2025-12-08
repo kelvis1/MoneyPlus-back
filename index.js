@@ -12,10 +12,10 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 
 
-const port = 3000;
+// const port = 3000;
 
-app.listen(port, () => {
-  console.log("Server is running");
-});
+// app.listen(port, () => {
+//   console.log("Server is running");
+// });
 
 export default app;
