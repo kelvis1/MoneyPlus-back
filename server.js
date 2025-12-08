@@ -14,3 +14,4 @@ app.use("/auth", authRoutes);
 
 app.listen(8000, () => console.log("Backend rodando na porta 8000"));
 
+export default app;
