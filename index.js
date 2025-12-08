@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/auth", authRoutes);
+// app.use("/auth", authRoutes);
 
 
 // const port = 3000;
