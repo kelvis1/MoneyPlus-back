@@ -1,25 +1,20 @@
 import express from "express";
 import cors from "cors";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import Database from "better-sqlite3";
 
-const SECRET = "seu_token_super_secreto";
+import path from "path"; 
+import os from "os";
+
+const tmpDir = os.tmpdir();
+const dbPath = path.join(tmpDir, "database.db");
+
 const app = express();
-const port = 3000;
+app.use(cors());
+app.use(express.json());
 
-// ----------- Banco de Dados -----------
-export async function openDb() {
-  return open({
-    filename: "./database.db",
-    driver: sqlite3.Database,
-  });
-}
+const db = new Database(dbPath);
 
-// Cria tabela automaticamente
-openDb().then(db => {
-  db.exec(`
+db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
@@ -27,64 +22,57 @@ openDb().then(db => {
       password TEXT
     )
   `);
-});
 
-// ----------- Middlewares -----------
-app.use(cors());
-app.use(express.json());
-
-// ----------- Rotas -----------
 app.get("/", (req, res) => {
-  res.send("Hello, World! This is your Express API demo.");
+  res.json({ message: "API de Produtos com SQLite", status: 'ok' });
 });
 
-app.get("/status", (req, res) => {
-  res.json({
-    status: "online",
-    message: "API funcionando corretamente!",
-    timestamp: new Date().toISOString(),
-  });
-});
 
-app.post("/registro", async (req, res) => {
+
+
+app.post("/registro", (req, res) => {
   const { name, email, password } = req.body;
-  const db = await openDb();
 
-  const userExists = await db.get(
-    "SELECT * FROM users WHERE email = ?",
-    email
-  );
+  // Verifica se já existe o usuário
+  const userExists = db
+    .prepare("SELECT * FROM users WHERE email = ?")
+    .get(email);
 
   if (userExists) {
     return res.status(400).json({ error: "Email já cadastrado" });
   }
 
-  const hashed = await bcrypt.hash(password, 10);
+  // Criptografa senha
+  const hashed = bcrypt.hashSync(password, 10);
 
-  await db.run(
-    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-    [name, email, hashed]
-  );
+  // Insere no banco
+  db.prepare(
+    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
+  ).run(name, email, hashed);
 
   return res.json({ message: "Usuário registrado com sucesso!" });
 });
 
-app.post("/login", async (req, res) => {
+app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const db = await openDb();
 
-  const user = await db.get("SELECT * FROM users WHERE email = ?", email);
+  // Busca usuário pelo email
+  const user = db
+    .prepare("SELECT * FROM users WHERE email = ?")
+    .get(email);
 
   if (!user) {
     return res.status(400).json({ error: "Email ou senha inválidos" });
   }
 
-  const valid = await bcrypt.compare(password, user.password);
+  // Valida senha
+  const valid = bcrypt.compareSync(password, user.password);
 
   if (!valid) {
     return res.status(400).json({ error: "Email ou senha inválidos" });
   }
 
+  // Gera token JWT
   const token = jwt.sign(
     { id: user.id, email: user.email },
     SECRET,
@@ -94,10 +82,11 @@ app.post("/login", async (req, res) => {
   return res.json({ message: "Login efetuado!", token });
 });
 
-// ----------- Servidor -----------
+
+const port = 3000;
+
 app.listen(port, () => {
   console.log("Server is running");
 });
 
-// ----------- Export igual ao seu outro código -----------
 export default app;
